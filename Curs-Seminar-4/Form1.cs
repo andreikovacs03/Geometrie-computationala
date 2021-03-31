@@ -106,6 +106,106 @@ namespace Curs_Seminar_4
             gfx.FillPolygon(new SolidBrush(RandomColor()), points);
             gfx.DrawPolygon(new Pen(Color.Black), points);
         }
+        static bool directionOfPointToRight(Point A, Point B, Point P)
+        {
+            // subtracting co-ordinates of point A
+            // from B and P, to make A as origin
+            B.X -= A.X;
+            B.Y -= A.Y;
+            P.X -= A.X;
+            P.Y -= A.Y;
+
+            // Determining cross Product
+            int cross_product = B.X * P.Y - B.Y * P.X;
+
+            return cross_product >= 0;
+        }
+        private void DrawNonIntersectingPoly()
+        {
+            gfx.Clear(Color.White);
+            int sides = int.Parse(textBox8.Text);
+
+            List<Point> points = new List<Point>();
+
+            Point leftMost = new Point(pictureBox1.Width, 0);
+            Point rightMost = new Point(0, 0);
+
+            for (int i = 0; i < sides; i++)
+            {
+                Point point = new Point(rng.Next(pictureBox1.Width), rng.Next(pictureBox1.Height));
+                if (point.X < leftMost.X)
+                    leftMost = point;
+
+                if (point.X > rightMost.X)
+                    rightMost = point;
+
+                points.Add(point);
+            }
+
+            gfx.FillEllipse(new SolidBrush(Color.Black), leftMost.X - 5, leftMost.Y - 5, 10, 10);
+            gfx.FillEllipse(new SolidBrush(Color.Black), rightMost.X - 5, rightMost.Y - 5, 10, 10);
+
+            points.Remove(leftMost);
+            points.Remove(rightMost);
+
+            List<Point> A = new List<Point>();
+            List<Point> B = new List<Point>();
+
+            foreach (Point point in points)
+            {
+                if (directionOfPointToRight(leftMost, rightMost, point))
+                    B.Add(point);
+                else
+                    A.Add(point);
+            }
+
+            A = A.OrderBy(x => x.X).ToList();
+            B = B.OrderByDescending(x => x.X).ToList();
+
+            List<Point> sortedPoints = new List<Point>();
+
+            sortedPoints.Add(leftMost);
+            sortedPoints.AddRange(A);
+            sortedPoints.Add(rightMost);
+            sortedPoints.AddRange(B);
+
+            //gfx.FillPolygon(new SolidBrush(Color.RoyalBlue), sortedPoints.ToArray());
+            A.Insert(0, leftMost);
+            A.Add(rightMost);
+
+            B.Insert(0, rightMost);
+            B.Add(leftMost);
+
+            gfx.DrawLines(new Pen(Color.Red, 10), A.ToArray());
+            gfx.DrawLines(new Pen(Color.Green, 10), B.ToArray());
+        }
+
+
+        float sign(PointF p1, PointF p2, PointF p3)
+        {
+            return (p1.X - p3.X) * (p2.Y - p3.Y) - (p2.X - p3.X) * (p1.Y - p3.Y);
+        }
+
+        bool PointInTriangle(PointF pt, PointF v1, PointF v2, PointF v3)
+        {
+            float d1, d2, d3;
+            bool has_neg, has_pos;
+
+            d1 = sign(pt, v1, v2);
+            d2 = sign(pt, v2, v3);
+            d3 = sign(pt, v3, v1);
+
+            has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+            has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+            return !(has_neg && has_pos);
+        }
+
+        void ConvexHull()
+        {
+            int pointCount = int.Parse(textBox8.Text);
+
+        }
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -120,6 +220,16 @@ namespace Curs_Seminar_4
         private void button6_Click(object sender, EventArgs e)
         {
             DrawPoly();
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            DrawNonIntersectingPoly();
+        }
+
+        private void button7_Click_1(object sender, EventArgs e)
+        {
+            ConvexHull();
         }
     }
 }
