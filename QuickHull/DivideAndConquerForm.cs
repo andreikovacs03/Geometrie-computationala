@@ -22,19 +22,18 @@ namespace QuickHull
             InitializeComponent();
         }
 
-        public List<PointF> RandomPoints(int separatePlus, int separateMinus, int count = 5) =>
+        public List<PointF> RandomPoints(int count = 20) =>
           Enumerable.Range(0, count)
-          .Select(x => new PointF(rng.Next(pointRadius + separatePlus, Canvas.Width - separateMinus - pointRadius), rng.Next(pointRadius, Canvas.Height - pointRadius)))
+          .Select(x => new PointF(rng.Next(pointRadius, Canvas.Width - pointRadius), rng.Next(pointRadius, Canvas.Height - pointRadius)))
           .ToList();
 
         private void MergeBtn_Click(object sender, EventArgs e)
         {
-            ConvexHullSolver solver = new ConvexHullSolver(Gfx, Canvas);
-            List<PointF> pointsA = RandomPoints(0,Canvas.Width / 2);
-            List<PointF> pointsB = RandomPoints(Canvas.Width / 2, 0);
-
-            pointsA = QuickHull.ConvexHull(pointsA);
-            pointsB = QuickHull.ConvexHull(pointsB);
+            List<PointF> points = RandomPoints(100);
+            points = points.OrderBy(point => point.X).ToList();
+            points = DivideAndConquer.ConvexHull(points);
+            QuickHullGraphics.Clear();
+            QuickHullGraphics.FinishLines(points);
         }
 
         private void DivideAndConquerForm_Load(object sender, EventArgs e)

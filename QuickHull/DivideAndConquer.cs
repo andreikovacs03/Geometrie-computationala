@@ -6,280 +6,190 @@ using System.Linq;
 
 namespace QuickHull
 {
-    public class ConvexHullSolver
+    public class DivideAndConquer
     {
-        System.Drawing.Graphics g;
-        System.Windows.Forms.PictureBox pictureBoxView;
-
-        public ConvexHullSolver(System.Drawing.Graphics g, System.Windows.Forms.PictureBox pictureBoxView)
+        static PointF mid = new PointF();
+        public static List<PointF> ConvexHull(List<PointF> points)
         {
-            this.g = g;
-            this.pictureBoxView = pictureBoxView;
+            if (points.Count <= 5)
+                return BruteHull(points);
+
+            List<PointF> left = new List<PointF>();
+            List<PointF> right = new List<PointF>();
+
+            for (int i = 0; i < points.Count / 2; i++)
+                left.Add(points[i]);
+
+            for (int i = points.Count() / 2; i < points.Count; i++)
+                right.Add(points[i]);
+
+            left = ConvexHull(left);
+            right = ConvexHull(right);
+
+            return MergeHull(left, right);
         }
 
-        public void Refresh()
+        public static List<PointF> MergeHull(List<PointF> a, List<PointF> b)
         {
-            // Use this especially for debugging and whenever you want to see what you have drawn so far
-            pictureBoxView.Refresh();
-        }
+            int n1 = a.Count, n2 = b.Count;
 
-        public void Pause(int milliseconds)
-        {
-            // Use this especially for debugging and to animate your algorithm slowly
-            pictureBoxView.Refresh();
-            System.Threading.Thread.Sleep(milliseconds);
-        }
+            int ia = 0, ib = 0;
+            for (int i = 1; i < n1; i++)
+                if (a[i].X > a[ia].X)
+                    ia = i;
 
-        public void Solve(List<System.Drawing.PointF> pointList)
-        {
-            // TODO: Insert your code here
+            for (int i = 1; i < n2; i++)
+                if (b[i].X < b[ib].X)
+                    ib = i;
 
-            //order points by x value
-            pointList = pointList.OrderBy(p => p.X).ToList();//O(nlogn)
-
-            Hull solution = getHull(pointList, 0, "start");
-            Pen redPen = new Pen(Color.Red, 2.0f);
-            drawLines(solution.getPoints(), redPen);
-            Refresh();
-        }
-
-        public void drawLines(List<PointF> points, Pen pen)
-        {
-            PointF[] pointArray = points.ToArray();
-            g.DrawLines(pen, pointArray);
-            g.DrawLine(pen, pointArray[0], pointArray[points.Count - 1]);
-        }
-
-        public Hull getHull(List<PointF> pointList, int recurLevel, String side)
-        {
-            if (pointList.Count <= 1)
+            int inda = ia, indb = ib;
+            bool done = false;
+            while (!done)
             {
-                Hull result = new Hull(pointList);
-                result.setRightMost(pointList[pointList.Count - 1]);
-                return result;
-            }
-            else
-            {
+                done = true;
+                while (Orientation(b[indb], a[inda], a[(inda + 1) % n1]) >= 0)
+                    inda = (inda + 1) % n1;
 
-                List<List<PointF>> sets = divideSet(pointList);
-
-                Hull leftHull = getHull(sets[0], recurLevel + 1, side += " left");
-                Hull rightHull = getHull(sets[1], recurLevel + 1, side += " right");
-
-                //Console.WriteLine(recurLevel + " " + side);
-                //Console.WriteLine("\tSize of left: " + leftHull.getPoints().Count);
-                //Console.WriteLine("\tSize of right: " + rightHull.getPoints().Count);
-
-                return merge(leftHull, rightHull);
-            }
-        }
-
-        public Hull merge(Hull left, Hull right)
-        {
-            int rightMost = left.getRightMostIndex();
-            int leftMost = right.getLeftMostIndex();
-
-            int currentLeftIndex = rightMost;
-            int currentRightIndex = leftMost;
-
-            int upperLeft = -1;
-            int upperRight = -1;
-            int lowerLeft = -1;
-            int lowerRight = -1;
-
-            bool leftIndexChanged = false;
-            bool rightIndexChanged = false;
-            //iterate through at least once
-            bool firstRight = true;
-            bool firstLeft = true;
-
-            //get upper common tangent
-            while (leftIndexChanged || rightIndexChanged || firstLeft || firstRight)
-            {
-                if (firstRight || leftIndexChanged)
+                while (Orientation(a[inda], b[indb], b[(n2 + indb - 1) % n2]) <= 0)
                 {
-                    firstRight = false;
-                    upperRight = getRightUpper(left, right, currentLeftIndex, currentRightIndex);
-                    if (upperRight == currentRightIndex)
-                    {
-                        leftIndexChanged = false;
-                        rightIndexChanged = false;
-                    }
-                    else
-                    {
-                        rightIndexChanged = true;
-                        currentRightIndex = upperRight;
-                    }
-                }
-                if (firstLeft || rightIndexChanged)
-                {
-                    firstLeft = false;
-                    upperLeft = getLeftUpper(left, right, currentLeftIndex, currentRightIndex);
-                    if (upperLeft == currentLeftIndex)
-                    {
-                        leftIndexChanged = false;
-                        rightIndexChanged = false;
-                    }
-                    else
-                    {
-                        leftIndexChanged = true;
-                        currentLeftIndex = upperLeft;
-                    }
+                    indb = (n2 + indb - 1) % n2;
+                    done = false;
                 }
             }
 
-            //get lower common tangentt
-            currentLeftIndex = rightMost;
-            currentRightIndex = leftMost;
-
-            leftIndexChanged = false;
-            rightIndexChanged = false;
-            //iterate through at least once
-            firstRight = true;
-            firstLeft = true;
-            while (leftIndexChanged || rightIndexChanged || firstLeft || firstRight)
+            int uppera = inda, upperb = indb;
+            inda = ia;
+            indb = ib;
+            done = false;
+            int g = 0;
+            while (!done)
             {
-                if (firstLeft || rightIndexChanged)
-                {
-                    firstLeft = false;
-                    lowerLeft = getLeftLower(left, right, currentLeftIndex, currentRightIndex);
-                    if (lowerLeft == currentLeftIndex)
-                    {
-                        leftIndexChanged = false;
-                        rightIndexChanged = false;
-                    }
-                    else
-                    {
-                        leftIndexChanged = true;
-                        currentLeftIndex = lowerLeft;
-                    }
-                }
+                done = true;
+                while (Orientation(a[inda], b[indb], b[(indb + 1) % n2]) >= 0)
+                    indb = (indb + 1) % n2;
 
-                if (firstRight || leftIndexChanged)
+                while (Orientation(b[indb], a[inda], a[(n1 + inda - 1) % n1]) <= 0)
                 {
-                    firstRight = false;
-                    lowerRight = getRightLower(left, right, currentLeftIndex, currentRightIndex);
-                    if (lowerRight == currentRightIndex)
-                    {
-                        leftIndexChanged = false;
-                        rightIndexChanged = false;
-                    }
-                    else
-                    {
-                        rightIndexChanged = true;
-                        currentRightIndex = lowerRight;
-                    }
+                    inda = (n1 + inda - 1) % n1;
+                    done = false;
                 }
             }
 
-            //join points
-            List<PointF> resultPoints = new List<PointF>();
-            //add up to (and including) upperLeft
-            for (int i = 0; i <= upperLeft; i++)
+            int lowera = inda, lowerb = indb;
+            List<PointF> ret = new List<PointF>();
+
+            int ind = uppera;
+            ret.Add(a[uppera]);
+            while (ind != lowera)
             {
-                resultPoints.Add(left.getPoints()[i]);
-            }
-            //add up to lowerRight
-            for (int i = upperRight; i != lowerRight; i = right.getNextIndex(i))
-            {
-                resultPoints.Add(right.getPoints()[i]);
-            }
-            //add lowerRight
-            resultPoints.Add(right.getPoints()[lowerRight]);
-            //add from lowerLeft to beginning
-            for (int i = lowerLeft; i != 0; i = left.getNextIndex(i))
-            {
-                resultPoints.Add(left.getPoints()[i]);
+                ind = (ind + 1) % n1;
+                ret.Add(a[ind]);
             }
 
-            return new Hull(resultPoints);
-        }
-        private int getLeftUpper(Hull left, Hull right, int leftIndex, int rightIndex)
-        { //O(n)
-            List<PointF> leftPoints = left.getPoints();
-            List<PointF> rightPoints = right.getPoints();
-            while (calculateSlope(rightPoints[rightIndex], leftPoints[left.getPrevIndex(leftIndex)]) <
-                  calculateSlope(rightPoints[rightIndex], leftPoints[leftIndex]))
+            ind = lowerb;
+            ret.Add(b[lowerb]);
+            while (ind != upperb)
             {
-                leftIndex = left.getPrevIndex(leftIndex);
+                ind = (ind + 1) % n2;
+                ret.Add(b[ind]);
             }
-            return leftIndex;
+            return ret;
         }
 
-        private int getRightUpper(Hull left, Hull right, int leftIndex, int rightIndex)
-        { //O(n)
-            List<PointF> rightPoints = right.getPoints();
-            List<PointF> leftPoints = left.getPoints();
-            while (calculateSlope(leftPoints[leftIndex], rightPoints[right.getNextIndex(rightIndex)]) >
-                  calculateSlope(leftPoints[leftIndex], rightPoints[rightIndex]))
-            {
-                rightIndex = right.getNextIndex(rightIndex);
-            }
-
-            return rightIndex;
-        }
-
-        private int getLeftLower(Hull left, Hull right, int leftIndex, int rightIndex)
-        { //O(n)
-            List<PointF> leftPoints = left.getPoints();
-            List<PointF> rightPoints = right.getPoints();
-            while (calculateSlope(rightPoints[rightIndex], leftPoints[left.getNextIndex(leftIndex)]) >
-                  calculateSlope(rightPoints[rightIndex], leftPoints[leftIndex]))
-            {
-                leftIndex = left.getNextIndex(leftIndex);
-            }
-            return leftIndex;
-        }
-
-        private int getRightLower(Hull left, Hull right, int leftIndex, int rightIndex)
-        { //O(n)
-            List<PointF> rightPoints = right.getPoints();
-            List<PointF> leftPoints = left.getPoints();
-            while (calculateSlope(leftPoints[leftIndex], rightPoints[right.getPrevIndex(rightIndex)]) <
-                  calculateSlope(leftPoints[leftIndex], rightPoints[rightIndex]))
-            {
-                rightIndex = right.getPrevIndex(rightIndex);
-            }
-            return rightIndex;
-        }
-
-        private int getIndexForPoint(PointF point, Hull hull)
+        public static List<PointF> BruteHull(List<PointF> points)
         {
-            List<PointF> points = hull.getPoints();
+            List<PointF> S = new List<PointF>();
+
             for (int i = 0; i < points.Count; i++)
-            {
-                if (points[i].Equals(point))
+                for (int j = i + 1; j < points.Count; j++)
                 {
-                    return i;
+                    float x1 = points[i].X, x2 = points[j].X;
+                    float y1 = points[i].Y, y2 = points[j].Y;
+
+                    float a1 = y1 - y2;
+                    float b1 = x2 - x1;
+                    float c1 = x1 * y2 - y1 * x2;
+                    int pos = 0, neg = 0;
+
+                    for (int k = 0; k < points.Count; k++)
+                    {
+                        if (a1 * points[k].X + b1 * points[k].Y + c1 <= 0)
+                            neg++;
+                        if (a1 * points[k].X + b1 * points[k].Y + c1 >= 0)
+                            pos++;
+                    }
+                    if (pos == points.Count || neg == points.Count)
+                    {
+                        S.Add(points[i]);
+                        S.Add(points[j]);
+                    }
                 }
-            }
-            return -100;
-        }
 
-        //return a list of a list of points. 
-        //The first list will be the left side. 
-        //The second will be the right side
-        public List<List<System.Drawing.PointF>> divideSet(List<PointF> points)
-        {
-            List<PointF> leftSide = points.Take(points.Count / 2).ToList();
-            List<PointF> rightSide = points.Skip(points.Count / 2).ToList();
-            List<List<PointF>> result = new List<List<PointF>>();
-            result.Add(leftSide);
-            result.Add(rightSide);
-            return result;
-        }
+            List<PointF> ret = new List<PointF>();
 
-        public Double calculateSlope(PointF left, PointF right)
-        {
-            return -(right.Y - left.Y) / (right.X - left.X);
-        }
+            foreach(var e in S)
+                ret.Add(e);
 
-        private void printPointInformation(List<PointF> pointList)
-        {
-            foreach (PointF point in pointList)
+            mid = new PointF(0, 0);
+            int n = ret.Count;
+
+            for (int i = 0; i < n; i++)
             {
-                Console.WriteLine("[" + point.X + "," + point.Y + "]");
+                mid.X += ret[i].X;
+                mid.Y += ret[i].Y;
+                ret[i] = new PointF(ret[i].X * n, ret[i].Y * n);
+            }
+
+            PointFComparer comp = new PointFComparer();
+            ret.Sort(comp);
+
+            for (int i = 0; i < n; i++)
+                ret[i] = new PointF(ret[i].X / n, ret[i].Y / n);
+
+            return ret;
+        }
+
+        static int Quad(PointF p)
+        {
+            if (p.X >= 0 && p.Y >= 0)
+                return 1;
+            if (p.X <= 0 && p.Y >= 0)
+                return 2;
+            if (p.X <= 0 && p.Y <= 0)
+                return 3;
+            return 4;
+        }
+
+        static int Orientation(PointF a, PointF b, PointF c)
+        {
+            float res = (b.Y - a.Y) * (c.X - b.X) -
+                      (c.Y - b.Y) * (b.X - a.X);
+
+            if (res == 0)
+                return 0;
+            if (res > 0)
+                return 1;
+            return -1;
+        }
+
+        public class PointFComparer : IComparer<PointF>
+        {
+            public int Compare(PointF p1, PointF q1)
+            {
+                PointF p = new PointF(p1.X - mid.X,
+                                             p1.Y - mid.Y);
+                PointF q = new PointF(q1.X - mid.X,
+                                             q1.Y - mid.Y);
+
+                int one = Quad(p);
+                int two = Quad(q);
+
+                if (one != two)
+                    return (one < two ? -1 : 1);
+                return (p.Y * q.X < q.Y * p.X ? -1 : 1);
             }
         }
     }
+
+
 }
