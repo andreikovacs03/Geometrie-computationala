@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 
 namespace QuickHull
 {
     public class DivideAndConquer
     {
         static PointF mid = new PointF();
+        static Random rng = new Random();
         public static List<PointF> ConvexHull(List<PointF> points)
         {
             if (points.Count <= 5)
-                return BruteHull(points);
+            {
+                var result2 = BruteHull(points);
+                return result2;
+            }
 
             List<PointF> left = new List<PointF>();
             List<PointF> right = new List<PointF>();
@@ -26,7 +31,10 @@ namespace QuickHull
             left = ConvexHull(left);
             right = ConvexHull(right);
 
-            return MergeHull(left, right);
+            var result = MergeHull(left, right);
+            QuickHullGraphics.Gfx.DrawPolygon(new Pen(Color.FromArgb(rng.Next(255), rng.Next(255), rng.Next(255)), 2), result.ToArray());
+            Thread.Sleep(1000);
+            return result;
         }
 
         public static List<PointF> MergeHull(List<PointF> a, List<PointF> b)
@@ -127,7 +135,7 @@ namespace QuickHull
 
             List<PointF> ret = new List<PointF>();
 
-            foreach(var e in S)
+            foreach (var e in S)
                 ret.Add(e);
 
             mid = new PointF(0, 0);

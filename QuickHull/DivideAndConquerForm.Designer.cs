@@ -36,7 +36,7 @@ namespace QuickHull
             // 
             // MergeBtn
             // 
-            this.MergeBtn.Location = new System.Drawing.Point(678, 387);
+            this.MergeBtn.Location = new System.Drawing.Point(871, 595);
             this.MergeBtn.Name = "MergeBtn";
             this.MergeBtn.Size = new System.Drawing.Size(75, 23);
             this.MergeBtn.TabIndex = 0;
@@ -49,7 +49,7 @@ namespace QuickHull
             this.Canvas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Canvas.Location = new System.Drawing.Point(0, 0);
             this.Canvas.Name = "Canvas";
-            this.Canvas.Size = new System.Drawing.Size(800, 450);
+            this.Canvas.Size = new System.Drawing.Size(1005, 672);
             this.Canvas.TabIndex = 1;
             this.Canvas.TabStop = false;
             // 
@@ -57,7 +57,7 @@ namespace QuickHull
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1005, 672);
             this.Controls.Add(this.MergeBtn);
             this.Controls.Add(this.Canvas);
             this.Name = "DivideAndConquerForm";

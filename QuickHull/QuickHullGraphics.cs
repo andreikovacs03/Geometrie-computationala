@@ -9,7 +9,7 @@ namespace QuickHull
 {
     public static class QuickHullGraphics
     {
-        static Graphics Gfx { get; set; }
+        public static Graphics Gfx { get; set; }
         public static void Initialize(Graphics gfx, int pointRadius = 4)
         {
             Gfx = gfx;
@@ -41,6 +41,7 @@ namespace QuickHull
 
         public static void FinishLines(List<PointF> points)
         {
+            Thread.Sleep(1000);
             Gfx.DrawPolygon(new Pen(Color.Green, 4), points.ToArray());
         }
     }
