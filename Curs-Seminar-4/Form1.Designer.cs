@@ -49,6 +49,9 @@ namespace Curs_Seminar_4
             this.textBox7 = new System.Windows.Forms.TextBox();
             this.button7 = new System.Windows.Forms.Button();
             this.textBox8 = new System.Windows.Forms.TextBox();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.button8 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -57,20 +60,20 @@ namespace Curs_Seminar_4
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1205, 852);
+            this.pictureBox1.Size = new System.Drawing.Size(1205, 929);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(1056, 340);
+            this.textBox1.Location = new System.Drawing.Point(1056, 147);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 23);
             this.textBox1.TabIndex = 1;
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(1056, 369);
+            this.textBox2.Location = new System.Drawing.Point(1056, 176);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(100, 23);
             this.textBox2.TabIndex = 2;
@@ -78,7 +81,7 @@ namespace Curs_Seminar_4
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(996, 343);
+            this.label1.Location = new System.Drawing.Point(996, 150);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(53, 15);
             this.label1.TabIndex = 3;
@@ -87,7 +90,7 @@ namespace Curs_Seminar_4
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(996, 372);
+            this.label2.Location = new System.Drawing.Point(996, 179);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(27, 15);
             this.label2.TabIndex = 4;
@@ -95,7 +98,7 @@ namespace Curs_Seminar_4
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(1067, 408);
+            this.button1.Location = new System.Drawing.Point(1067, 215);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 5;
@@ -105,7 +108,7 @@ namespace Curs_Seminar_4
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(1007, 451);
+            this.button2.Location = new System.Drawing.Point(1007, 258);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(149, 23);
             this.button2.TabIndex = 6;
@@ -167,7 +170,7 @@ namespace Curs_Seminar_4
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(1007, 480);
+            this.button5.Location = new System.Drawing.Point(1007, 287);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(149, 23);
             this.button5.TabIndex = 7;
@@ -177,14 +180,14 @@ namespace Curs_Seminar_4
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(1056, 550);
+            this.textBox3.Location = new System.Drawing.Point(1056, 357);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(100, 23);
             this.textBox3.TabIndex = 8;
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(1067, 637);
+            this.button6.Location = new System.Drawing.Point(1067, 444);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(75, 23);
             this.button6.TabIndex = 9;
@@ -194,40 +197,70 @@ namespace Curs_Seminar_4
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(1056, 579);
+            this.textBox4.Location = new System.Drawing.Point(1056, 386);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(100, 23);
             this.textBox4.TabIndex = 10;
             // 
             // textBox7
             // 
-            this.textBox7.Location = new System.Drawing.Point(1056, 608);
+            this.textBox7.Location = new System.Drawing.Point(1056, 415);
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(100, 23);
             this.textBox7.TabIndex = 11;
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(1056, 725);
+            this.button7.Location = new System.Drawing.Point(1067, 581);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(75, 23);
             this.button7.TabIndex = 12;
-            this.button7.Text = "ConvexHull";
+            this.button7.Text = "Triangulate";
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click_1);
             // 
             // textBox8
             // 
-            this.textBox8.Location = new System.Drawing.Point(1056, 684);
+            this.textBox8.Location = new System.Drawing.Point(1056, 552);
             this.textBox8.Name = "textBox8";
+            this.textBox8.PlaceholderText = "Sides";
             this.textBox8.Size = new System.Drawing.Size(100, 23);
             this.textBox8.TabIndex = 13;
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new System.Drawing.Point(1056, 610);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.PlaceholderText = "Area";
+            this.textBox9.Size = new System.Drawing.Size(100, 23);
+            this.textBox9.TabIndex = 0;
+            // 
+            // textBox10
+            // 
+            this.textBox10.Location = new System.Drawing.Point(1056, 652);
+            this.textBox10.Multiline = true;
+            this.textBox10.Name = "textBox10";
+            this.textBox10.Size = new System.Drawing.Size(100, 80);
+            this.textBox10.TabIndex = 14;
+            // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(1038, 738);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(135, 23);
+            this.button8.TabIndex = 15;
+            this.button8.Text = "Triangulate by points";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1205, 852);
+            this.ClientSize = new System.Drawing.Size(1205, 929);
+            this.Controls.Add(this.button8);
+            this.Controls.Add(this.textBox10);
+            this.Controls.Add(this.textBox9);
             this.Controls.Add(this.textBox8);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.textBox7);
@@ -273,6 +306,9 @@ namespace Curs_Seminar_4
         private System.Windows.Forms.TextBox textBox7;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.TextBox textBox8;
+        private System.Windows.Forms.TextBox textBox9;
+        private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.Button button8;
     }
 }
 

@@ -24,6 +24,7 @@ namespace Curs_Seminar_4
         private void Form1_Load(object sender, EventArgs e)
         {
             gfx = pictureBox1.CreateGraphics();
+            gfx.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -106,7 +107,7 @@ namespace Curs_Seminar_4
             gfx.FillPolygon(new SolidBrush(RandomColor()), points);
             gfx.DrawPolygon(new Pen(Color.Black), points);
         }
-        static bool directionOfPointToRight(Point A, Point B, Point P)
+        static bool directionOfPointToRight(PointF A, PointF B, PointF P)
         {
             // subtracting co-ordinates of point A
             // from B and P, to make A as origin
@@ -116,7 +117,7 @@ namespace Curs_Seminar_4
             P.Y -= A.Y;
 
             // Determining cross Product
-            int cross_product = B.X * P.Y - B.Y * P.X;
+            float cross_product = B.X * P.Y - B.Y * P.X;
 
             return cross_product >= 0;
         }
@@ -125,14 +126,14 @@ namespace Curs_Seminar_4
             gfx.Clear(Color.White);
             int sides = int.Parse(textBox8.Text);
 
-            List<Point> points = new List<Point>();
+            List<PointF> points = new List<PointF>();
 
-            Point leftMost = new Point(pictureBox1.Width, 0);
-            Point rightMost = new Point(0, 0);
+            PointF leftMost = new PointF(pictureBox1.Width, 0);
+            PointF rightMost = new PointF(0, 0);
 
             for (int i = 0; i < sides; i++)
             {
-                Point point = new Point(rng.Next(pictureBox1.Width), rng.Next(pictureBox1.Height));
+                PointF point = new PointF(rng.Next(pictureBox1.Width), rng.Next(pictureBox1.Height));
                 if (point.X < leftMost.X)
                     leftMost = point;
 
@@ -148,10 +149,10 @@ namespace Curs_Seminar_4
             points.Remove(leftMost);
             points.Remove(rightMost);
 
-            List<Point> A = new List<Point>();
-            List<Point> B = new List<Point>();
+            List<PointF> A = new List<PointF>();
+            List<PointF> B = new List<PointF>();
 
-            foreach (Point point in points)
+            foreach (PointF point in points)
             {
                 if (directionOfPointToRight(leftMost, rightMost, point))
                     B.Add(point);
@@ -162,7 +163,7 @@ namespace Curs_Seminar_4
             A = A.OrderBy(x => x.X).ToList();
             B = B.OrderByDescending(x => x.X).ToList();
 
-            List<Point> sortedPoints = new List<Point>();
+            List<PointF> sortedPoints = new List<PointF>();
 
             sortedPoints.Add(leftMost);
             sortedPoints.AddRange(A);
@@ -178,8 +179,71 @@ namespace Curs_Seminar_4
 
             gfx.DrawLines(new Pen(Color.Red, 10), A.ToArray());
             gfx.DrawLines(new Pen(Color.Green, 10), B.ToArray());
+            A.AddRange(B);
+            textBox9.Text = Area(A).ToString();
         }
 
+        private void DrawNonIntersectingPolyByPoints()
+        {
+            gfx.Clear(Color.White);
+            string[] lines = textBox10.Text.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+
+            List<PointF> points = new List<PointF>();
+
+            foreach (var line in lines)
+                points.Add(new PointF(int.Parse(line.Split(' ')[0]) * 10, int.Parse(line.Split(' ')[1]) * 10));
+
+            PointF leftMost = new PointF(pictureBox1.Width, 0);
+            PointF rightMost = new PointF(0, 0);
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                if (points[i].X < leftMost.X)
+                    leftMost = points[i];
+
+                if (points[i].X > rightMost.X)
+                    rightMost = points[i];
+            }
+
+            gfx.FillEllipse(new SolidBrush(Color.Black), leftMost.X - 5, leftMost.Y - 5, 10, 10);
+            gfx.FillEllipse(new SolidBrush(Color.Black), rightMost.X - 5, rightMost.Y - 5, 10, 10);
+
+            points.Remove(leftMost);
+            points.Remove(rightMost);
+
+            List<PointF> A = new List<PointF>();
+            List<PointF> B = new List<PointF>();
+
+            foreach (PointF point in points)
+            {
+                if (directionOfPointToRight(leftMost, rightMost, point))
+                    B.Add(point);
+                else
+                    A.Add(point);
+            }
+
+            A = A.OrderBy(x => x.X).ToList();
+            B = B.OrderByDescending(x => x.X).ToList();
+
+            List<PointF> sortedPoints = new List<PointF>();
+
+            sortedPoints.Add(leftMost);
+            sortedPoints.AddRange(A);
+            sortedPoints.Add(rightMost);
+            sortedPoints.AddRange(B);
+
+            //gfx.FillPolygon(new SolidBrush(Color.RoyalBlue), sortedPoints.ToArray());
+            A.Insert(0, leftMost);
+            A.Add(rightMost);
+
+            B.Insert(0, rightMost);
+            B.Add(leftMost);
+
+            gfx.DrawLines(new Pen(Color.Red), A.ToArray());
+            gfx.DrawLines(new Pen(Color.Green), B.ToArray());
+            A.AddRange(B);
+            textBox9.Text = Area(A).ToString();
+        }
 
         float sign(PointF p1, PointF p2, PointF p3)
         {
@@ -206,6 +270,18 @@ namespace Curs_Seminar_4
             int pointCount = int.Parse(textBox8.Text);
 
         }
+        // A.X A.Y 1
+        // B.X B.Y 1
+        // O.X O.Y 1
+        float CrossProduct(PointF a, PointF b) => a.X * b.Y - a.Y * b.X;
+        float Area(List<PointF> points)
+        {
+            double sum = 0f;
+            for (int i = 0; i < points.Count; i++)
+                sum += CrossProduct(points[i], points[(i + 1) % points.Count]);
+
+            return (float)Math.Abs(sum) / 2f;
+        }
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -224,12 +300,16 @@ namespace Curs_Seminar_4
 
         private void button7_Click(object sender, EventArgs e)
         {
-            DrawNonIntersectingPoly();
         }
 
         private void button7_Click_1(object sender, EventArgs e)
         {
-            ConvexHull();
+            DrawNonIntersectingPoly();
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            DrawNonIntersectingPolyByPoints();
         }
     }
 }
